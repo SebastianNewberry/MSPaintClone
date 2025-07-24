@@ -6,27 +6,27 @@ import "react-color-palette/css";
 const activeColorTypeCls = "bg-[#bcdbfa] border border-[#a1cefa]";
 
 const colors = [
-  { title: "黑色", value: "#000000ff" },
-  { title: "灰色-50%", value: "#7f7f7fff" },
-  { title: "深红色", value: "#880015ff" },
-  { title: "红色", value: "#ed1c24ff" },
-  { title: "橙色", value: "#ff7f27ff" },
-  { title: "黄色", value: "#fff200ff" },
-  { title: "绿色", value: "#22b14cff" },
-  { title: "青绿色", value: "#00a2e8ff" },
-  { title: "蓝青色", value: "#3f48ccff" },
-  { title: "紫色", value: "#a349a4ff" },
-  { title: "白色", value: "#ffffffff" },
-  { title: "灰色-25%", value: "#c3c3c3ff" },
-  { title: "褐色", value: "#b97a57ff" },
-  { title: "玫瑰色", value: "#ffaec9ff" },
-  { title: "金色", value: "#ffc90eff" },
-  { title: "浅黄色", value: "#efe4b0ff" },
-  { title: "酸橙色", value: "#b5e61dff" },
-  { title: "青绿色", value: "#808000ff" },
-  { title: "淡青蓝色", value: "#99d9eaff" },
-  { title: "蓝灰色", value: "#7092beff" },
-  { title: "淡紫色", value: "#c8bfe7ff" },
+  { title: "Black", value: "#000000ff" },
+  { title: "Gray - 50%", value: "#7f7f7fff" },
+  { title: "Dark Red", value: "#880015ff" },
+  { title: "Red", value: "#ed1c24ff" },
+  { title: "Orange", value: "#ff7f27ff" },
+  { title: "Yellow", value: "#fff200ff" },
+  { title: "Green", value: "#22b14cff" },
+  { title: "Cyan Green", value: "#00a2e8ff" },
+  { title: "Blue Cyan", value: "#3f48ccff" },
+  { title: "Purple", value: "#a349a4ff" },
+  { title: "White", value: "#ffffffff" },
+  { title: "Gray - 25%", value: "#c3c3c3ff" },
+  { title: "Brown", value: "#b97a57ff" },
+  { title: "Rose", value: "#ffaec9ff" },
+  { title: "Gold", value: "#ffc90eff" },
+  { title: "Light Yellow", value: "#efe4b0ff" },
+  { title: "Lime", value: "#b5e61dff" },
+  { title: "Olive", value: "#808000ff" },
+  { title: "Light Cyan Blue", value: "#99d9eaff" },
+  { title: "Blue Gray", value: "#7092beff" },
+  { title: "Light Purple", value: "#c8bfe7ff" },
 ];
 
 // Helper function to convert hex string to IColor/Color object
@@ -112,7 +112,7 @@ const ColorPanel = ({
               className="w-[32px] h-[32px] border border-gray-500 p-[1px]"
               style={{ backgroundColor: currentColors[0] }}
             />
-            <div>颜色1</div>
+            <div>Color 1</div>
           </div>
           <div
             onClick={() => setSelectedColor(1)}
@@ -124,7 +124,7 @@ const ColorPanel = ({
               className="w-[28px] h-[28px] m-[2px] border border-gray-500 p-[1px]"
               style={{ backgroundColor: currentColors[1] }}
             />
-            <div>颜色2</div>
+            <div>Color 2</div>
           </div>
         </div>
 
@@ -133,6 +133,7 @@ const ColorPanel = ({
           {colors.map((color) => (
             <div
               key={color.value}
+              title={color.title}
               onClick={() => {
                 setColor(color.value, selectedColor); // Update parent state
                 setColorState(hexToColor(color.value)); // Update ColorPicker state
@@ -146,12 +147,12 @@ const ColorPanel = ({
         {/* Color Picker */}
         <div className="ml-[10px] w-[45px] text-center">
           {/* <ColorPicker color={color} onChange={handleColorChange} /> */}
-          <div className="text-xs mt-1">编辑颜色</div>
+          <div className="text-xs mt-1">Color Picker</div>
         </div>
       </div>
 
       {/* Title at Bottom */}
-      <div className="absolute bottom-0 w-full text-center">颜色</div>
+      <div className="absolute bottom-0 w-full text-center">Colors</div>
     </div>
   );
 };

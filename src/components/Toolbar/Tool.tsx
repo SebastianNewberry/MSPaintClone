@@ -16,7 +16,7 @@ const ToolPanel = ({
   return (
     <div className="w-20 inline-flex flex-col relative">
       <div className="flex justify-between mb-1">
-        <span title="铅笔">
+        <span title="Pencil">
           <Pencil
             className={`${baseClass} ${
               toolType === ToolType.PEN ? selectedClass : ""
@@ -24,7 +24,7 @@ const ToolPanel = ({
             onClick={() => setToolType(ToolType.PEN)}
           />
         </span>
-        <span title="橡皮擦">
+        <span title="Eraser">
           <Eraser
             className={`${baseClass} ${
               toolType === ToolType.ERASER ? selectedClass : ""
@@ -32,7 +32,7 @@ const ToolPanel = ({
             onClick={() => setToolType(ToolType.ERASER)}
           />
         </span>
-        <span title="填充">
+        <span title="Paint Bucket">
           <PaintBucket
             className={`${baseClass} ${
               toolType === ToolType.COLOR_FILL ? selectedClass : ""
@@ -42,7 +42,7 @@ const ToolPanel = ({
         </span>
       </div>
       <div className="flex justify-between mb-1">
-        <span title="颜色选取器">
+        <span title="Color Extract">
           <Pipette
             className={`${baseClass} ${
               toolType === ToolType.COLOR_EXTRACT ? selectedClass : ""
@@ -51,7 +51,7 @@ const ToolPanel = ({
           />
         </span>
       </div>
-      <div className="w-full text-center absolute bottom-0">工具</div>
+      <div className="w-full text-center absolute bottom-0">Tools</div>
     </div>
   );
 };

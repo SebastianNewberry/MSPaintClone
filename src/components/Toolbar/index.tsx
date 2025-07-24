@@ -43,6 +43,11 @@ const Toolbar = () => {
     });
   };
 
+  const colorSwitch = (selectedColor: number) => {
+    setSelectedColor(selectedColor);
+    Tool.mainColor = colors[selectedColor];
+  };
+
   const clearEvent = () => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -263,7 +268,7 @@ const Toolbar = () => {
         <Separator orientation="vertical" />
         <ColorPanel
           currentColors={colors}
-          setSelectedColor={setSelectedColor}
+          setSelectedColor={colorSwitch}
           setColor={setColor}
           selectedColor={selectedColor}
         />
@@ -276,7 +281,7 @@ const Toolbar = () => {
       </div>
       <canvas
         ref={canvasRef}
-        className="m-5 shadow-[2px_2px_10px_rgb(236,235,235),_-2px_-2px_10px_rgb(236,235,235),_-2px_2px_10px_rgb(236,235,235),_2px_-2px_10px_rgb(236,235,235)] h-[50vh] w-1/2 m-auto"
+        className="m-5 shadow-[2px_2px_10px_rgb(236,235,235),_-2px_-2px_10px_rgb(236,235,235),_-2px_2px_10px_rgb(236,235,235),_2px_-2px_10px_rgb(236,235,235)] h-[50vh] w-full mt-5 m-auto"
       />
     </div>
   );
