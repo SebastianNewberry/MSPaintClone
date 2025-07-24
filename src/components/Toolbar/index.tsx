@@ -39,7 +39,6 @@ const Toolbar = () => {
   const initializedCanvases = useRef<Set<number>>(new Set());
 
   const changeSelectedCanvas = (index: number) => {
-    console.log("changed canvas");
     setSelectedCanvas(index);
   };
 
@@ -166,6 +165,7 @@ const Toolbar = () => {
       }) as CanvasRenderingContext2D;
 
       const ctx = currentCanvas.getContext("2d", { willReadFrequently: true });
+
       if (ctx && !initializedCanvases.current.has(selectedCanvas)) {
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
