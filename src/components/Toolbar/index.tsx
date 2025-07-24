@@ -15,6 +15,7 @@ import {
 import { Tool, ColorExtract, ColorFill, Pen, Eraser } from "@/util/tool";
 import Shape from "@/util/tool/shape";
 import Snapshot from "@/util/snapshot";
+import { Button } from "@/components/ui/button";
 
 const Toolbar = () => {
   const [toolType, setToolType] = useState<ToolType>(ToolType.PEN);
@@ -31,8 +32,16 @@ const Toolbar = () => {
   const [colors, setColors] = useState<string[]>(["#000000ff", "#ffffffff"]);
   const [selectedColor, setSelectedColor] = useState<number>(0); //keep track of index of currently selected color
   const [tool, setTool] = useState<Tool>();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement[]>([]);
   const [snapshot] = useState<Snapshot>(new Snapshot());
+
+  const [selectedCanvas, setSelectedCanvas] = useState<number>(0);
+  const initializedCanvases = useRef<Set<number>>(new Set());
+
+  const changeSelectedCanvas = (index: number) => {
+    console.log("changed canvas");
+    setSelectedCanvas(index);
+  };
 
   const setColor = (value: string, index: number) => {
     setColors((prevColors) => {
@@ -51,40 +60,46 @@ const Toolbar = () => {
   const clearEvent = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+      canvas.forEach((canvas) => {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      });
     }
   };
 
   const redoEvent = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        const imageData = snapshot.forward();
-        if (imageData) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.putImageData(imageData, 0, 0);
+      canvas.forEach((canvas) => {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const imageData = snapshot.forward();
+          if (imageData) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
+          }
         }
-      }
+      });
     }
   };
 
   const undoEvent = () => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        const imageData = snapshot.back();
-        console.log(imageData);
-        if (imageData) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.putImageData(imageData, 0, 0);
+      canvas.forEach((canvas) => {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const imageData = snapshot.back();
+          console.log(imageData);
+          if (imageData) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
+          }
         }
-      }
+      });
     }
   };
 
@@ -138,39 +153,46 @@ const Toolbar = () => {
   }, [lineWidthType]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    let canvas = canvasRef.current;
     if (canvas) {
-      canvas.height = canvas.clientHeight;
-      canvas.width = canvas.clientWidth;
+      const currentCanvas = canvas[selectedCanvas];
+      if (!initializedCanvases.current.has(selectedCanvas)) {
+        currentCanvas.height = currentCanvas.clientHeight;
+        currentCanvas.width = currentCanvas.clientWidth;
+      }
 
-      Tool.ctx = canvas.getContext("2d", {
+      Tool.ctx = currentCanvas.getContext("2d", {
         willReadFrequently: true,
       }) as CanvasRenderingContext2D;
 
-      const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      if (ctx) {
+      const ctx = currentCanvas.getContext("2d", { willReadFrequently: true });
+      if (ctx && !initializedCanvases.current.has(selectedCanvas)) {
         ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
 
-        snapshot.add(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        snapshot.add(
+          ctx.getImageData(0, 0, currentCanvas.width, currentCanvas.height)
+        );
+
+        initializedCanvases.current.add(selectedCanvas);
       }
 
       window.addEventListener("resize", () => {
         const canvasData = Tool.ctx.getImageData(
           0,
           0,
-          canvas.width,
-          canvas.height
+          currentCanvas.width,
+          currentCanvas.height
         );
-        canvas.height = canvas.clientHeight;
-        canvas.width = canvas.clientWidth;
-        Tool.ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+        currentCanvas.height = currentCanvas.clientHeight;
+        currentCanvas.width = currentCanvas.clientWidth;
+        Tool.ctx = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
         Tool.ctx.fillStyle = "white";
-        Tool.ctx.fillRect(0, 0, canvas.width, canvas.height);
+        Tool.ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
         Tool.ctx.putImageData(canvasData, 0, 0);
       });
     }
-  }, [canvasRef]);
+  }, [canvasRef, selectedCanvas]);
 
   const onMouseDown = (event: MouseEvent) => {
     if (tool instanceof ColorExtract) {
@@ -224,25 +246,37 @@ const Toolbar = () => {
     );
   };
 
+  const setCanvasRef = (el: HTMLCanvasElement | null, index: number) => {
+    if (canvasRef.current) {
+      if (el) {
+        canvasRef.current[index] = el;
+      }
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      canvas.addEventListener("mousedown", onMouseDown);
-      canvas.addEventListener("mousemove", onMouseMove);
-      canvas.addEventListener("mouseup", onMouseUp);
+      canvas.forEach((canvas) => {
+        canvas.addEventListener("mousedown", onMouseDown);
+        canvas.addEventListener("mousemove", onMouseMove);
+        canvas.addEventListener("mouseup", onMouseUp);
 
-      canvas.addEventListener("touchstart", onTouchStart);
-      canvas.addEventListener("touchmove", onTouchMove);
-      canvas.addEventListener("touchend", onTouchEnd);
+        canvas.addEventListener("touchstart", onTouchStart);
+        canvas.addEventListener("touchmove", onTouchMove);
+        canvas.addEventListener("touchend", onTouchEnd);
+      });
 
       return () => {
-        canvas.removeEventListener("mousedown", onMouseDown);
-        canvas.removeEventListener("mousemove", onMouseMove);
-        canvas.removeEventListener("mouseup", onMouseUp);
+        canvas.forEach((canvas) => {
+          canvas.removeEventListener("mousedown", onMouseDown);
+          canvas.removeEventListener("mousemove", onMouseMove);
+          canvas.removeEventListener("mouseup", onMouseUp);
 
-        canvas.removeEventListener("touchstart", onTouchStart);
-        canvas.removeEventListener("touchmove", onTouchMove);
-        canvas.removeEventListener("touchend", onTouchEnd);
+          canvas.removeEventListener("touchstart", onTouchStart);
+          canvas.removeEventListener("touchmove", onTouchMove);
+          canvas.removeEventListener("touchend", onTouchEnd);
+        });
       };
     }
   }, [canvasRef, onMouseDown, onMouseMove, onMouseUp]);
@@ -280,9 +314,20 @@ const Toolbar = () => {
         />
       </div>
       <canvas
-        ref={canvasRef}
-        className="m-5 shadow-[2px_2px_10px_rgb(236,235,235),_-2px_-2px_10px_rgb(236,235,235),_-2px_2px_10px_rgb(236,235,235),_2px_-2px_10px_rgb(236,235,235)] h-[50vh] w-full mt-5 m-auto"
+        ref={(el) => setCanvasRef(el, 0)}
+        className="m-5 shadow-lg h-[50vh] w-full mt-5 m-auto"
       />
+      <canvas
+        ref={(el) => setCanvasRef(el, 1)}
+        className="m-5 shadow-lg h-[50vh] w-full mt-5 m-auto"
+      />
+
+      <Button onClick={() => changeSelectedCanvas(0)}>
+        Change to Canvas 1
+      </Button>
+      <Button onClick={() => changeSelectedCanvas(1)}>
+        Change to Canvas 2
+      </Button>
     </div>
   );
 };
