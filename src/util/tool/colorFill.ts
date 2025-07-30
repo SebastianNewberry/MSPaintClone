@@ -5,7 +5,7 @@ const efficentFloodFill = (
   ctx: CanvasRenderingContext2D,
   startX: number,
   startY: number,
-  fillColor: [number, number, number]
+  fillColor: [number, number, number, number]
 ) => {
   startX = Math.round(startX);
   startY = Math.round(startY);
@@ -16,16 +16,18 @@ const efficentFloodFill = (
     canvasHeight = ctx.canvas.height;
   const startPos = (startY * canvasWidth + startX) * 4;
   const colorLayer = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  const startColor: [number, number, number] = [
+  const startColor: [number, number, number, number] = [
     colorLayer.data[startPos],
     colorLayer.data[startPos + 1],
     colorLayer.data[startPos + 2],
+    colorLayer.data[startPos + 3],
   ];
 
   if (
     startColor[0] === fillColor[0] &&
     startColor[1] === fillColor[1] &&
-    startColor[2] === fillColor[2]
+    startColor[2] === fillColor[2] &&
+    startColor[3] == fillColor[3]
   )
     return;
 
@@ -81,23 +83,25 @@ const efficentFloodFill = (
 const matchColor = (
   colorLayer: ImageData,
   pixelPos: number,
-  color: [number, number, number]
+  color: [number, number, number, number]
 ) => {
   const r = colorLayer.data[pixelPos];
   const g = colorLayer.data[pixelPos + 1];
   const b = colorLayer.data[pixelPos + 2];
+  const a = colorLayer.data[pixelPos + 3];
 
-  return r === color[0] && g === color[1] && b === color[2];
+  return r === color[0] && g === color[1] && b === color[2] && a === color[3];
 };
 
 const fillPixel = (
   colorLayer: ImageData,
   pixelPos: number,
-  color: [number, number, number]
+  color: [number, number, number, number]
 ) => {
   colorLayer.data[pixelPos] = color[0];
   colorLayer.data[pixelPos + 1] = color[1];
   colorLayer.data[pixelPos + 2] = color[2];
+  colorLayer.data[pixelPos + 3] = color[3];
 
   return colorLayer;
 };
@@ -109,6 +113,7 @@ class ColorFill extends Tool {
       color.red(),
       color.green(),
       color.blue(),
+      255,
     ]);
   }
   public onMouseDown(event: MouseEvent): void {

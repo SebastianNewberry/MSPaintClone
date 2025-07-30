@@ -92,7 +92,6 @@ const Toolbar = () => {
         const ctx = canvas.getContext("2d");
         if (ctx) {
           const imageData = snapshot.back();
-          console.log(imageData);
           if (imageData) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.putImageData(imageData, 0, 0);
@@ -167,8 +166,8 @@ const Toolbar = () => {
       const ctx = currentCanvas.getContext("2d", { willReadFrequently: true });
 
       if (ctx && !initializedCanvases.current.has(selectedCanvas)) {
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
+        // ctx.fillStyle = "white";
+        // ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
 
         snapshot.add(
           ctx.getImageData(0, 0, currentCanvas.width, currentCanvas.height)
@@ -187,8 +186,8 @@ const Toolbar = () => {
         currentCanvas.height = currentCanvas.clientHeight;
         currentCanvas.width = currentCanvas.clientWidth;
         Tool.ctx = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
-        Tool.ctx.fillStyle = "white";
-        Tool.ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
+        // Tool.ctx.fillStyle = "white";
+        // Tool.ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
         Tool.ctx.putImageData(canvasData, 0, 0);
       });
     }
@@ -313,14 +312,20 @@ const Toolbar = () => {
           redo={redoEvent}
         />
       </div>
-      <canvas
-        ref={(el) => setCanvasRef(el, 0)}
-        className="m-5 shadow-lg h-[50vh] w-full mt-5 m-auto"
-      />
-      <canvas
-        ref={(el) => setCanvasRef(el, 1)}
-        className="m-5 shadow-lg h-[50vh] w-full mt-5 m-auto"
-      />
+      <div className="relative w-full h-[50vh] m-5">
+        <canvas
+          ref={(el) => setCanvasRef(el, 0)}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all ${
+            selectedCanvas === 0 ? "z-10" : "z-0"
+          }`}
+        />
+        <canvas
+          ref={(el) => setCanvasRef(el, 1)}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all ${
+            selectedCanvas === 1 ? "z-10" : "z-0"
+          }`}
+        />
+      </div>
 
       <Button onClick={() => changeSelectedCanvas(0)}>
         Change to Canvas 1
