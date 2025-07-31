@@ -106,14 +106,31 @@ const fillPixel = (
   return colorLayer;
 };
 
+const parseHexWithAlpha = (hex: string) => {
+  console.log("Hex input:", hex);
+  if (hex.length === 9) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const alphaHex = hex.slice(7, 9);
+    console.log("Alpha hex part:", alphaHex); // log the last 2 digits
+    const a = parseInt(alphaHex, 16) / 255;
+    console.log("Alpha (0-1):", a);
+    return Color({ r, g, b, alpha: a });
+  } else {
+    return Color(hex);
+  }
+};
+
 class ColorFill extends Tool {
   private operateStart(pos: Point) {
-    const color = new Color(Tool.mainColor);
+    const color = parseHexWithAlpha(Tool.mainColor);
+
     efficentFloodFill(Tool.ctx, pos.x, pos.y, [
       color.red(),
       color.green(),
       color.blue(),
-      255,
+      color.alpha() * 255,
     ]);
   }
   public onMouseDown(event: MouseEvent): void {
