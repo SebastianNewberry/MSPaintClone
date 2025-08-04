@@ -15,7 +15,7 @@ class Pen extends Tool {
     x: 0,
     y: 0,
   };
-  private operateStart(pos: Point) {
+    private operateStart(pos: Point) {
     if (!Tool.ctx) return;
 
     this.saveImageData = Tool.ctx.getImageData(
@@ -29,11 +29,16 @@ class Pen extends Tool {
     Tool.ctx.lineWidth = Tool.lineWidthFactor * this.lineWidthBase;
     Tool.ctx.strokeStyle =
       this.drawColorType === ColorType.MAIN ? Tool.mainColor : Tool.subColor;
+
+    // Set opacity here
+    Tool.ctx.globalAlpha = Tool.opacity;
+
     Tool.ctx.lineJoin = "round";
     Tool.ctx.lineCap = "round";
     Tool.ctx.beginPath();
     this.previousPos = pos;
   }
+
   private operateMove(pos: Point) {
     if (this.mouseDown) {
       Tool.ctx.moveTo(this.previousPos.x, this.previousPos.y);

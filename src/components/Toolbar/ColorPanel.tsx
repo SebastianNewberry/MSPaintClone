@@ -27,6 +27,8 @@ const colors = [
   { title: "Light Cyan Blue", value: "#99d9eaff" },
   { title: "Blue Gray", value: "#7092beff" },
   { title: "Light Purple", value: "#c8bfe7ff" },
+  { title: "Indigo", value: "#4B0082ff" },
+  { title: "Dark brown", value : "#654321ff" },
 ];
 
 // Helper function to convert hex string to IColor/Color object

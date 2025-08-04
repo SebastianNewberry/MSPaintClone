@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import ThickSelector from "@/components/Toolbar/ThickSelector";
 import ColorPanel from "@/components/Toolbar/ColorPanel";
 import OtherOperator from "@/components/Toolbar/Other";
+import Opacity from "@/components/Toolbar/OpacityControl"; //Import opacity control component here
 import {
   ToolType,
   ShapeToolType,
@@ -29,16 +30,21 @@ const Toolbar = () => {
     ColorType.MAIN
   );
   const [colors, setColors] = useState<string[]>(["#000000ff", "#ffffffff"]);
-  const [selectedColor, setSelectedColor] = useState<number>(0); //keep track of index of currently selected color
+  const [selectedColor, setSelectedColor] = useState<number>(0);
   const [tool, setTool] = useState<Tool>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [snapshot] = useState<Snapshot>(new Snapshot());
+  const [opacity, setOpacityValue] = useState<number>(1);
+
+  useEffect(() => {
+    Tool.opacity = opacity;
+  }, [opacity]);
 
   const setColor = (value: string, index: number) => {
     setColors((prevColors) => {
       const newColors = [...prevColors];
       newColors[index] = value;
-      Tool.mainColor = value; // Update Tool.mainColor immediately
+      Tool.mainColor = value;
       return newColors;
     });
   };
@@ -79,7 +85,6 @@ const Toolbar = () => {
       const ctx = canvas.getContext("2d");
       if (ctx) {
         const imageData = snapshot.back();
-        console.log(imageData);
         if (imageData) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.putImageData(imageData, 0, 0);
@@ -151,7 +156,6 @@ const Toolbar = () => {
       if (ctx) {
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         snapshot.add(ctx.getImageData(0, 0, canvas.width, canvas.height));
       }
 
@@ -189,7 +193,6 @@ const Toolbar = () => {
   const onMouseUp = (event: MouseEvent) => {
     if (tool) {
       tool.onMouseUp(event);
-
       snapshot.add(
         Tool.ctx.getImageData(
           0,
@@ -260,6 +263,8 @@ const Toolbar = () => {
           shapeOutlineType={shapeOutlineType}
           setShapeOutlineType={setShapeOutlineType}
         />
+        <Separator orientation="vertical" />
+        <Opacity opacity={opacity} setOpacity={setOpacityValue} /> {/* Opacity control */}
         <Separator orientation="vertical" />
         <ThickSelector
           lineWidthType={lineWidthType}

@@ -98,41 +98,48 @@ export const updateImageData = (
 
 export default class Tool {
   /**
-   * 线宽
+   * Line width
    */
   public static lineWidthFactor = 1;
+
   /**
-   * 主色
+   * Primary color
    */
   public static mainColor = "black";
+
   /**
-   * 副色
+   * Secondary color
    */
   public static subColor = "white";
+
+  /**
+   * Opacity (0.0 - 1.0)
+   */
+  public static opacity = 1.0;
 
   public static ctx: CanvasRenderingContext2D;
 
   public onMouseDown(event: MouseEvent, selectedColor?: number): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 
   public onMouseMove(event: MouseEvent): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 
   public onMouseUp(event: MouseEvent): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 
   public onTouchStart(event: TouchEvent, selectedColor?: number): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 
   public onTouchMove(event: TouchEvent): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 
   public onTouchEnd(event: TouchEvent): void {
-    //
+    if (Tool.ctx) Tool.ctx.globalAlpha = Tool.opacity;
   }
 }
