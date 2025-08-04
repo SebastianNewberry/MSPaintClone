@@ -97,20 +97,9 @@ export const updateImageData = (
 };
 
 export default class Tool {
-  /**
-   * Line width
-   */
   public static lineWidthFactor = 1;
-
-  /**
-   * Primary color
-   */
-  public static mainColor = "black";
-
-  /**
-   * Secondary color
-   */
-  public static subColor = "white";
+  public static mainColor = "#000000ff";
+  public static subColor = "#ffffffff";
 
   /**
    * Opacity (0.0 - 1.0)

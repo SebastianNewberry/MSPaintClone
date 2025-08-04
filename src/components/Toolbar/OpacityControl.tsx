@@ -1,6 +1,6 @@
 import React from "react";
 
-// Define the props for the OpacityControl component
+// Define the properties for the OpacityControl component
 interface OpacityControlProps {
   opacity: number; // Current opacity value (between 0 and 1)
   setOpacity: (value: number) => void; // Function to update the opacity

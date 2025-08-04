@@ -5,7 +5,7 @@ const efficentFloodFill = (
   ctx: CanvasRenderingContext2D,
   startX: number,
   startY: number,
-  fillColor: [number, number, number]
+  fillColor: [number, number, number, number]
 ) => {
   startX = Math.round(startX);
   startY = Math.round(startY);
@@ -16,16 +16,18 @@ const efficentFloodFill = (
     canvasHeight = ctx.canvas.height;
   const startPos = (startY * canvasWidth + startX) * 4;
   const colorLayer = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-  const startColor: [number, number, number] = [
+  const startColor: [number, number, number, number] = [
     colorLayer.data[startPos],
     colorLayer.data[startPos + 1],
     colorLayer.data[startPos + 2],
+    colorLayer.data[startPos + 3],
   ];
 
   if (
     startColor[0] === fillColor[0] &&
     startColor[1] === fillColor[1] &&
-    startColor[2] === fillColor[2]
+    startColor[2] === fillColor[2] &&
+    startColor[3] == fillColor[3]
   )
     return;
 
@@ -81,34 +83,54 @@ const efficentFloodFill = (
 const matchColor = (
   colorLayer: ImageData,
   pixelPos: number,
-  color: [number, number, number]
+  color: [number, number, number, number]
 ) => {
   const r = colorLayer.data[pixelPos];
   const g = colorLayer.data[pixelPos + 1];
   const b = colorLayer.data[pixelPos + 2];
+  const a = colorLayer.data[pixelPos + 3];
 
-  return r === color[0] && g === color[1] && b === color[2];
+  return r === color[0] && g === color[1] && b === color[2] && a === color[3];
 };
 
 const fillPixel = (
   colorLayer: ImageData,
   pixelPos: number,
-  color: [number, number, number]
+  color: [number, number, number, number]
 ) => {
   colorLayer.data[pixelPos] = color[0];
   colorLayer.data[pixelPos + 1] = color[1];
   colorLayer.data[pixelPos + 2] = color[2];
+  colorLayer.data[pixelPos + 3] = color[3];
 
   return colorLayer;
 };
 
+const parseHexWithAlpha = (hex: string) => {
+  console.log("Hex input:", hex);
+  if (hex.length === 9) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const alphaHex = hex.slice(7, 9);
+    console.log("Alpha hex part:", alphaHex); // log the last 2 digits
+    const a = parseInt(alphaHex, 16) / 255;
+    console.log("Alpha (0-1):", a);
+    return Color({ r, g, b, alpha: a });
+  } else {
+    return Color(hex);
+  }
+};
+
 class ColorFill extends Tool {
   private operateStart(pos: Point) {
-    const color = new Color(Tool.mainColor);
+    const color = parseHexWithAlpha(Tool.mainColor);
+
     efficentFloodFill(Tool.ctx, pos.x, pos.y, [
       color.red(),
       color.green(),
       color.blue(),
+      color.alpha() * 255,
     ]);
   }
   public onMouseDown(event: MouseEvent): void {
