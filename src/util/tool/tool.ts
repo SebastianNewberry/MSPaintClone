@@ -97,14 +97,25 @@ export const updateImageData = (
 };
 
 export default class Tool {
+  /**
+   * Line width
+   */
   public static lineWidthFactor = 1;
-  public static mainColor = "#000000ff";
-  public static subColor = "#ffffffff";
+
+  /**
+   * Primary color
+   */
+  public static mainColor = "black";
+
+  /**
+   * Secondary color
+   */
+  public static subColor = "white";
 
   /**
    * Opacity (0.0 - 1.0)
    */
-  public static opacity = 1.0;
+  public static opacity = 1.0; //property to control opacity
 
   public static ctx: CanvasRenderingContext2D;
 

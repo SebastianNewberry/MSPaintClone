@@ -14,7 +14,7 @@ function OpacityControl({ opacity, setOpacity }: OpacityControlProps) {
   };
 
   return (
-    <div style={{ width: 300, margin: "2rem auto", textAlign: "center" }}>
+    <div style={{ width: 300, margin: "0rem auto", textAlign: "center" }}>
       <h3>Opacity Control</h3>
       {/* Slider input to control opacity */}
       <input
@@ -31,7 +31,7 @@ function OpacityControl({ opacity, setOpacity }: OpacityControlProps) {
       <div
         style={{
           width: 100,
-          height: 100,
+          height: 20,
           background: "black",
           margin: "1rem auto",
           opacity: opacity,

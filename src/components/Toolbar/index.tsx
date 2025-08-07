@@ -1,3 +1,5 @@
+// Toolbar.tsx
+
 import React, { useContext, useEffect, useRef, useState } from "react";
 import ToolPanel from "@/components/Toolbar/Tool";
 import ShapePanel from "@/components/Toolbar/Shape";
@@ -5,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import ThickSelector from "@/components/Toolbar/ThickSelector";
 import ColorPanel from "@/components/Toolbar/ColorPanel";
 import OtherOperator from "@/components/Toolbar/Other";
-import Opacity from "@/components/Toolbar/OpacityControl"; //Import opacity control component here
+import Opacity from "@/components/Toolbar/OpacityControl";
 import {
   ToolType,
   ShapeToolType,
@@ -36,13 +38,13 @@ const Toolbar = () => {
   const canvasRef = useRef<HTMLCanvasElement[]>([]);
   const [snapshot] = useState<Snapshot>(new Snapshot());
   const [opacity, setOpacityValue] = useState<number>(1);
+  const [selectedCanvas, setSelectedCanvas] = useState<number>(0);
+  const [isHidden, setIsHidden] = useState<number>(0);
+  const initializedCanvases = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     Tool.opacity = opacity;
   }, [opacity]);
-
-  const [selectedCanvas, setSelectedCanvas] = useState<number>(0);
-  const initializedCanvases = useRef<Set<number>>(new Set());
 
   const changeSelectedCanvas = (index: number) => {
     setSelectedCanvas(index);
@@ -172,13 +174,9 @@ const Toolbar = () => {
       const ctx = currentCanvas.getContext("2d", { willReadFrequently: true });
 
       if (ctx && !initializedCanvases.current.has(selectedCanvas)) {
-        // ctx.fillStyle = "white";
-        // ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
-
         snapshot.add(
           ctx.getImageData(0, 0, currentCanvas.width, currentCanvas.height)
         );
-
         initializedCanvases.current.add(selectedCanvas);
       }
 
@@ -192,8 +190,6 @@ const Toolbar = () => {
         currentCanvas.height = currentCanvas.clientHeight;
         currentCanvas.width = currentCanvas.clientWidth;
         Tool.ctx = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
-        // Tool.ctx.fillStyle = "white";
-        // Tool.ctx.fillRect(0, 0, currentCanvas.width, currentCanvas.height);
         Tool.ctx.putImageData(canvasData, 0, 0);
       });
     }
@@ -265,7 +261,6 @@ const Toolbar = () => {
         canvas.addEventListener("mousedown", onMouseDown);
         canvas.addEventListener("mousemove", onMouseMove);
         canvas.addEventListener("mouseup", onMouseUp);
-
         canvas.addEventListener("touchstart", onTouchStart);
         canvas.addEventListener("touchmove", onTouchMove);
         canvas.addEventListener("touchend", onTouchEnd);
@@ -276,7 +271,6 @@ const Toolbar = () => {
           canvas.removeEventListener("mousedown", onMouseDown);
           canvas.removeEventListener("mousemove", onMouseMove);
           canvas.removeEventListener("mouseup", onMouseUp);
-
           canvas.removeEventListener("touchstart", onTouchStart);
           canvas.removeEventListener("touchmove", onTouchMove);
           canvas.removeEventListener("touchend", onTouchEnd);
@@ -285,9 +279,33 @@ const Toolbar = () => {
     }
   }, [canvasRef, onMouseDown, onMouseMove, onMouseUp]);
 
+  const saveCanvasAsImage = () => {
+    const [canvas0, canvas1] = canvasRef.current;
+
+    if (!canvas0 || !canvas1) return;
+
+    const width = canvas0.width;
+    const height = canvas0.height;
+
+    const mergedCanvas = document.createElement("canvas");
+    mergedCanvas.width = width;
+    mergedCanvas.height = height;
+    const ctx = mergedCanvas.getContext("2d");
+
+    if (!ctx) return;
+
+    ctx.drawImage(canvas0, 0, 0);
+    ctx.drawImage(canvas1, 0, 0);
+
+    const link = document.createElement("a");
+    link.download = "drawing.png";
+    link.href = mergedCanvas.toDataURL("image/png");
+    link.click();
+  };
+
   return (
     <div>
-      <div className="flex h-[150px] bg-[#f5f6f7] p-[10px] overflow-auto shrink-0 gap-[10px]">
+      <div className="flex h-[150px] bg-[#f5f6f7] p-[10px] overflow-auto shrink-0 gap-[65px]">
         <ToolPanel toolType={toolType} setToolType={setToolType} />
         <Separator orientation="vertical" />
         <ShapePanel
@@ -299,7 +317,7 @@ const Toolbar = () => {
           setShapeOutlineType={setShapeOutlineType}
         />
         <Separator orientation="vertical" />
-        <Opacity opacity={opacity} setOpacity={setOpacityValue} /> {/* Opacity control */}
+        <Opacity opacity={opacity} setOpacity={setOpacityValue} />
         <Separator orientation="vertical" />
         <ThickSelector
           lineWidthType={lineWidthType}
@@ -319,27 +337,26 @@ const Toolbar = () => {
           redo={redoEvent}
         />
       </div>
+
       <div className="relative w-full h-[50vh] m-5">
         <canvas
           ref={(el) => setCanvasRef(el, 0)}
-          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all ${
-            selectedCanvas === 0 ? "z-10" : "z-0"
-          }`}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-10 ${isHidden !== 0 ? "hidden" : ""}`}
         />
         <canvas
           ref={(el) => setCanvasRef(el, 1)}
-          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all ${
-            selectedCanvas === 1 ? "z-10" : "z-0"
-          }`}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-0 ${isHidden !== 0 ? "hidden" : ""}`}
         />
       </div>
 
-      <Button onClick={() => changeSelectedCanvas(0)}>
-        Change to Canvas 1
-      </Button>
-      <Button onClick={() => changeSelectedCanvas(1)}>
-        Change to Canvas 2
-      </Button>
+      <div className="flex gap-2 justify-center mt-4">
+        <Button onClick={() => changeSelectedCanvas(0)}>Layer 0</Button>
+        <Button onClick={() => changeSelectedCanvas(1)}>Layer 1</Button>
+        <Button onClick={() => setIsHidden((prev) => (prev === 1 ? 0 : 1))}>
+          Toggle Layer Visibility
+        </Button>
+        <Button onClick={saveCanvasAsImage}>Save Art</Button>
+      </div>
     </div>
   );
 };
