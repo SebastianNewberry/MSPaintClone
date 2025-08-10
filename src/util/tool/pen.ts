@@ -37,7 +37,8 @@ class Pen extends Tool {
     if (!this.tempCtx) return;
 
     // Init both canvases for drawing
-    const color = this.drawColorType === ColorType.MAIN ? Tool.mainColor : Tool.subColor;
+    const color =
+      this.drawColorType === ColorType.MAIN ? Tool.mainColor : Tool.subColor;
 
     [Tool.ctx, this.tempCtx].forEach((ctx) => {
       ctx.lineWidth = Tool.lineWidthFactor * this.lineWidthBase;
@@ -71,7 +72,8 @@ class Pen extends Tool {
   }
 
   private operateEnd() {
-    if (!this.mouseDown || !Tool.ctx || !this.tempCanvas || !this.tempCtx) return;
+    if (!this.mouseDown || !Tool.ctx || !this.tempCanvas || !this.tempCtx)
+      return;
 
     // Finish preview
     Tool.ctx.closePath();
@@ -106,7 +108,7 @@ class Pen extends Tool {
         colorRgb.r,
         colorRgb.g,
         colorRgb.b,
-        colorRgb.a,
+        Tool.opacity * 255,
       ]);
       Tool.ctx.putImageData(imageData, 0, 0);
     }

@@ -130,7 +130,7 @@ class ColorFill extends Tool {
       color.red(),
       color.green(),
       color.blue(),
-      color.alpha() * 255,
+      Tool.opacity * 255,
     ]);
   }
   public onMouseDown(event: MouseEvent): void {

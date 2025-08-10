@@ -42,9 +42,10 @@ const Toolbar = () => {
   const [isHidden, setIsHidden] = useState<number>(0);
   const initializedCanvases = useRef<Set<number>>(new Set());
 
-  useEffect(() => {
+  const setOpacity = (opacity: number) => {
+    setOpacityValue(opacity);
     Tool.opacity = opacity;
-  }, [opacity]);
+  };
 
   const changeSelectedCanvas = (index: number) => {
     setSelectedCanvas(index);
@@ -317,7 +318,7 @@ const Toolbar = () => {
           setShapeOutlineType={setShapeOutlineType}
         />
         <Separator orientation="vertical" />
-        <Opacity opacity={opacity} setOpacity={setOpacityValue} />
+        <Opacity opacity={opacity} setOpacity={setOpacity} />
         <Separator orientation="vertical" />
         <ThickSelector
           lineWidthType={lineWidthType}
@@ -341,11 +342,15 @@ const Toolbar = () => {
       <div className="relative w-full h-[50vh] m-5">
         <canvas
           ref={(el) => setCanvasRef(el, 0)}
-          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-10 ${isHidden !== 0 ? "hidden" : ""}`}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-10 ${
+            isHidden !== 0 ? "hidden" : ""
+          }`}
         />
         <canvas
           ref={(el) => setCanvasRef(el, 1)}
-          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-0 ${isHidden !== 0 ? "hidden" : ""}`}
+          className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-0 ${
+            isHidden !== 0 ? "hidden" : ""
+          }`}
         />
       </div>
 
