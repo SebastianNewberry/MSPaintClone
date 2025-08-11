@@ -162,24 +162,29 @@ const Toolbar = () => {
   useEffect(() => {
     let canvas = canvasRef.current;
     if (canvas) {
-      const currentCanvas = canvas[selectedCanvas];
-      if (!initializedCanvases.current.has(selectedCanvas)) {
-        currentCanvas.height = currentCanvas.clientHeight;
-        currentCanvas.width = currentCanvas.clientWidth;
-      }
+      const currentCanvas = canvasRef.current[selectedCanvas];
+      let raf = requestAnimationFrame(() => {
+        if (!currentCanvas) return;
+        if (currentCanvas.clientWidth === 0 || currentCanvas.clientHeight === 0)
+          return;
 
-      Tool.ctx = currentCanvas.getContext("2d", {
-        willReadFrequently: true,
-      }) as CanvasRenderingContext2D;
+        if (!initializedCanvases.current.has(selectedCanvas)) {
+          currentCanvas.height = currentCanvas.clientHeight;
+          currentCanvas.width = currentCanvas.clientWidth;
+        }
 
-      const ctx = currentCanvas.getContext("2d", { willReadFrequently: true });
+        Tool.ctx = currentCanvas.getContext("2d", {
+          willReadFrequently: true,
+        })!;
+        const ctx = Tool.ctx;
 
-      if (ctx && !initializedCanvases.current.has(selectedCanvas)) {
-        snapshot.add(
-          ctx.getImageData(0, 0, currentCanvas.width, currentCanvas.height)
-        );
-        initializedCanvases.current.add(selectedCanvas);
-      }
+        if (!initializedCanvases.current.has(selectedCanvas)) {
+          snapshot.add(
+            ctx.getImageData(0, 0, currentCanvas.width, currentCanvas.height)
+          );
+          initializedCanvases.current.add(selectedCanvas);
+        }
+      });
 
       window.addEventListener("resize", () => {
         const canvasData = Tool.ctx.getImageData(
@@ -193,6 +198,8 @@ const Toolbar = () => {
         Tool.ctx = currentCanvas.getContext("2d") as CanvasRenderingContext2D;
         Tool.ctx.putImageData(canvasData, 0, 0);
       });
+
+      return () => cancelAnimationFrame(raf);
     }
   }, [canvasRef, selectedCanvas]);
 
@@ -343,23 +350,49 @@ const Toolbar = () => {
         <canvas
           ref={(el) => setCanvasRef(el, 0)}
           className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-10 ${
-            isHidden !== 0 ? "hidden" : ""
+            isHidden === 2 ? "hidden" : ""
           }`}
         />
         <canvas
           ref={(el) => setCanvasRef(el, 1)}
           className={`absolute top-0 left-0 w-full h-full shadow-lg transition-all z-0 ${
-            isHidden !== 0 ? "hidden" : ""
+            isHidden === 1 ? "hidden" : ""
           }`}
         />
       </div>
 
       <div className="flex gap-2 justify-center mt-4">
-        <Button onClick={() => changeSelectedCanvas(0)}>Layer 0</Button>
-        <Button onClick={() => changeSelectedCanvas(1)}>Layer 1</Button>
-        <Button onClick={() => setIsHidden((prev) => (prev === 1 ? 0 : 1))}>
-          Toggle Layer Visibility
+        <Button
+          onClick={() => changeSelectedCanvas(0)}
+          disabled={isHidden == 2}
+        >
+          Layer 1
         </Button>
+        <Button
+          onClick={() => changeSelectedCanvas(1)}
+          disabled={isHidden == 1}
+        >
+          Layer 2
+        </Button>
+        <div className="flex flex-col justify-center items-center">
+          <Button
+            onClick={() => {
+              setIsHidden((prev) => (prev + 1) % 3);
+            }}
+          >
+            Toggle Layer Visibility
+          </Button>
+          <p>
+            layer{" "}
+            {isHidden === 0
+              ? "1 and 2"
+              : isHidden === 1
+              ? "1"
+              : isHidden == 2
+              ? "2"
+              : ""}
+          </p>
+        </div>
         <Button onClick={saveCanvasAsImage}>Save Art</Button>
       </div>
     </div>

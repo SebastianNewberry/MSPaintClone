@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
+import { HexColorPicker } from "react-colorful";
 
 const activeColorTypeCls = "bg-[#bcdbfa] border border-[#a1cefa]";
 
@@ -46,14 +47,13 @@ const ColorPanel = ({
   setSelectedColor: (index: number) => void;
   setColor: (value: string, index: number) => void;
 }) => {
-  const [color, setColorState] = useColor(currentColors[selectedColor] || "#000000");
+  const [color, setColorState] = useState(
+    currentColors[selectedColor] || "#000000"
+  );
 
   const handleColorChange = (newColor: any) => {
     setColorState(newColor);
-    const hexWithAlpha = `${newColor.hex}${Math.round(newColor.rgb.a * 255)
-      .toString(16)
-      .padStart(2, "0")}`;
-    setColor(hexWithAlpha, selectedColor);
+    setColor(newColor, selectedColor);
   };
 
   return (
@@ -86,9 +86,9 @@ const ColorPanel = ({
               key={colorObj.value}
               title={colorObj.title}
               onClick={() => {
-              setColor(colorObj.value, selectedColor);
-              setColorState({ hex: colorObj.value, rgb: { r: 0, g: 0, b: 0, a: 1 }, hsv: { h: 0, s: 0, v: 0 } });
-}}
+                setColor(colorObj.value, selectedColor);
+                setColorState(colorObj.value);
+              }}
               className="w-5 h-5 border border-gray-500 cursor-pointer hover:border-[#64a5e7]"
               style={{ backgroundColor: colorObj.value }}
             />
@@ -101,14 +101,7 @@ const ColorPanel = ({
       {/* Right side: Compact Color Picker */}
       <div className="flex flex-col items-center">
         <div className="text-xs text-gray-600 mb-1">Color Picker</div>
-        <ColorPicker
-          height={120}
-          width={120}
-          color={color}
-          onChange={handleColorChange}
-          hideHSV={true}
-          hideRGB={true}
-        />
+        <HexColorPicker color={color} onChange={handleColorChange} />
       </div>
     </div>
   );
