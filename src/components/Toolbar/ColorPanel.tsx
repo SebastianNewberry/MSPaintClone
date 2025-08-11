@@ -56,7 +56,7 @@ const ColorPanel = ({
   };
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-15">
       {/* Left side: selectors + grid */}
       <div className="flex flex-col justify-content items-center gap-4">
         {/* Color 1 and 2 selectors */}

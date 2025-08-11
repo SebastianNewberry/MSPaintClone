@@ -313,7 +313,7 @@ const Toolbar = () => {
 
   return (
     <div>
-      <div className="flex h-[150px] bg-[#f5f6f7] p-[10px] overflow-auto shrink-0 gap-[65px]">
+      <div className="flex h-[150px] bg-[#f5f6f7] p-[10px] overflow-auto shrink-0 gap-10 justify-center">
         <ToolPanel toolType={toolType} setToolType={setToolType} />
         <Separator orientation="vertical" />
         <ShapePanel
