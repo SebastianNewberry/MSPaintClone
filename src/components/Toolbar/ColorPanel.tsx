@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
 import { HexColorPicker } from "react-colorful";
 
@@ -59,7 +58,7 @@ const ColorPanel = ({
   return (
     <div className="flex gap-4">
       {/* Left side: selectors + grid */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col justify-content items-center gap-4">
         {/* Color 1 and 2 selectors */}
         <div className="flex gap-3">
           {[0, 1].map((i) => (
@@ -80,7 +79,7 @@ const ColorPanel = ({
         </div>
 
         {/* Preset Color Grid */}
-        <div className="grid grid-cols-8 gap-[4px] max-w-[180px]">
+        <div className="grid grid-cols-14 gap-[4px] max-w-[180px]">
           {colors.map((colorObj) => (
             <div
               key={colorObj.value}
@@ -94,8 +93,6 @@ const ColorPanel = ({
             />
           ))}
         </div>
-
-        <div className="text-center text-sm text-gray-700 mt-2">Colors</div>
       </div>
 
       {/* Right side: Compact Color Picker */}

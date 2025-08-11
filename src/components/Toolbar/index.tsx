@@ -365,12 +365,16 @@ const Toolbar = () => {
         <Button
           onClick={() => changeSelectedCanvas(0)}
           disabled={isHidden == 2}
+          className={`${selectedCanvas == 0 ? "border border-blue-500" : ""}`}
+          variant={"ghost"}
         >
           Layer 1
         </Button>
         <Button
           onClick={() => changeSelectedCanvas(1)}
           disabled={isHidden == 1}
+          className={`${selectedCanvas == 1 ? "border border-blue-500" : ""}`}
+          variant={"ghost"}
         >
           Layer 2
         </Button>
