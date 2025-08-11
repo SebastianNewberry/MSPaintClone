@@ -208,7 +208,7 @@ class Shape extends Tool {
         colorRgb.r,
         colorRgb.g,
         colorRgb.b,
-        colorRgb.a,
+        Tool.opacity * 255,
       ]);
 
       Tool.ctx.putImageData(imageData, 0, 0);
