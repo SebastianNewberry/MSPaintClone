@@ -19,6 +19,7 @@ import { Tool, ColorExtract, ColorFill, Pen, Eraser } from "@/util/tool";
 import Shape from "@/util/tool/shape";
 import Snapshot from "@/util/snapshot";
 import { Button } from "@/components/ui/button";
+import ImagePaste from "./imagePaste";
 
 const Toolbar = () => {
   const [toolType, setToolType] = useState<ToolType>(ToolType.PEN);
@@ -41,6 +42,10 @@ const Toolbar = () => {
   const [selectedCanvas, setSelectedCanvas] = useState<number>(0);
   const [isHidden, setIsHidden] = useState<number>(0);
   const initializedCanvases = useRef<Set<number>>(new Set());
+  const [width, setWidth] = useState(100);
+  const [height, setHeight] = useState(100);
+  const [xpos, setXPos] = useState(0);
+  const [ypos, setYPos] = useState(0);
 
   const setOpacity = (opacity: number) => {
     setOpacityValue(opacity);
@@ -311,6 +316,36 @@ const Toolbar = () => {
     link.click();
   };
 
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      if (!e.clipboardData) return;
+
+      for (const item of e.clipboardData.items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            const img = new Image();
+            img.onload = () => {
+              const ctx = Tool.ctx;
+              if (!ctx) return;
+
+              // Example: draw the pasted image to fit the whole canvas
+              ctx.drawImage(img, xpos, ypos, width, height);
+
+              snapshot.add(
+                ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
+              );
+            };
+            img.src = URL.createObjectURL(file);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => window.removeEventListener("paste", handlePaste);
+  }, [width, height, xpos, ypos]);
+
   return (
     <div>
       <div className="flex h-[150px] bg-[#f5f6f7] p-[10px] overflow-auto shrink-0 gap-10 justify-center">
@@ -343,6 +378,17 @@ const Toolbar = () => {
           clearCanvas={clearEvent}
           undo={undoEvent}
           redo={redoEvent}
+        />
+        <Separator orientation="vertical" />
+        <ImagePaste
+          width={width}
+          setWidth={setWidth}
+          setHeight={setHeight}
+          height={height}
+          xpos={xpos}
+          ypos={ypos}
+          setXPos={setXPos}
+          setYPos={setYPos}
         />
       </div>
 
